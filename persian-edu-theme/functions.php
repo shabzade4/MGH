@@ -750,3 +750,117 @@ add_action('template_redirect', function(){
         exit;
     }
 });
+
+// Performance: theme supports and head cleanup
+add_action('after_setup_theme', function(){
+    add_theme_support('responsive-embeds');
+    add_theme_support('align-wide');
+    add_theme_support('automatic-feed-links');
+});
+add_action('init', function(){
+    // Disable emojis
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    add_filter('emoji_svg_url', '__return_false');
+    // Clean head
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'wp_generator');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+    remove_action('wp_head', 'rest_output_link_wp_head');
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+});
+add_action('wp_footer', function(){
+    wp_dequeue_script('wp-embed');
+}, 99);
+
+// Resource hints for fonts CDNs
+add_filter('wp_resource_hints', function($urls, $relation_type){
+    if ('preconnect' !== $relation_type && 'dns-prefetch' !== $relation_type) return $urls;
+    $font_choice = get_theme_mod('pe_font_choice', 'vazirmatn');
+    if ($font_choice === 'vazirmatn'){
+        $urls[] = 'https://fonts.googleapis.com';
+        $urls[] = 'https://fonts.gstatic.com';
+    } else {
+        $urls[] = 'https://cdn.jsdelivr.net';
+    }
+    return array_unique($urls);
+}, 10, 2);
+
+// Defer theme script
+add_filter('script_loader_tag', function($tag, $handle){
+    if ($handle === 'pe-main'){
+        $tag = str_replace('<script ', '<script defer ', $tag);
+    }
+    return $tag;
+}, 10, 2);
+
+// Image performance attributes
+add_filter('wp_get_attachment_image_attributes', function($attr){
+    $attr['decoding'] = 'async';
+    if (!isset($attr['loading'])) $attr['loading'] = 'lazy';
+    return $attr;
+});
+// Lazy iframe in content
+add_filter('the_content', function($content){
+    return preg_replace('/<iframe(?![^>]*loading=)/i', '<iframe loading="lazy"', $content);
+});
+
+// Simple HTML cache helpers
+function pe_cache_html($key, $callback, $expire = 600){
+    $cached = get_transient($key);
+    if ($cached !== false) return $cached;
+    $html = (string) call_user_func($callback);
+    set_transient($key, $html, $expire);
+    return $html;
+}
+function pe_invalidate_home_caches(){
+    delete_transient('pe_home_slides');
+    delete_transient('pe_home_products');
+    delete_transient('pe_home_posts');
+}
+add_action('save_post', function($post_id){
+    $type = get_post_type($post_id);
+    if (in_array($type, ['post','product'])) pe_invalidate_home_caches();
+});
+
+// Renderers for homepage cached sections
+function pe_render_home_slides(){
+    return pe_cache_html('pe_home_slides', function(){
+        ob_start();
+        $slides = new WP_Query(['post_type'=>'post','posts_per_page'=>3]);
+        if ($slides->have_posts()): while ($slides->have_posts()): $slides->the_post(); ?>
+            <div class="slide">
+              <a href="<?php the_permalink(); ?>">
+                <?php if (has_post_thumbnail()) { the_post_thumbnail('post-card'); } else { echo '<div style="width:100%;height:100%;background:linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));"></div>'; } ?>
+                <div class="caption"><?php the_title(); ?></div>
+              </a>
+            </div>
+        <?php endwhile; wp_reset_postdata(); endif; 
+        return ob_get_clean();
+    });
+}
+function pe_render_home_products(){
+    return pe_cache_html('pe_home_products', function(){
+        ob_start();
+        $products = new WP_Query(['post_type'=>'product','posts_per_page'=>8]);
+        if ($products->have_posts()): while ($products->have_posts()): $products->the_post(); ?>
+            <div class="col-3 col-md-6 col-sm-12">
+              <?php get_template_part('template-parts/product', 'card'); ?>
+            </div>
+        <?php endwhile; wp_reset_postdata(); else: ?>
+            <p class="muted">محصولی یافت نشد.</p>
+        <?php endif;
+        return ob_get_clean();
+    });
+}
+function pe_render_home_posts(){
+    return pe_cache_html('pe_home_posts', function(){
+        ob_start();
+        $posts_q = new WP_Query(['post_type'=>'post','posts_per_page'=>6]);
+        if ($posts_q->have_posts()): while ($posts_q->have_posts()): $posts_q->the_post();
+            get_template_part('template-parts/content', 'card');
+        endwhile; wp_reset_postdata(); endif;
+        return ob_get_clean();
+    });
+}
