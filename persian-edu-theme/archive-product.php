@@ -1,7 +1,18 @@
 <?php get_header(); ?>
+<?php pe_breadcrumbs(); ?>
 <div class="grid">
   <div class="col-8 col-md-12">
     <h1>فروشگاه</h1>
+    <form method="get" style="margin:.5rem 0; display:flex; gap:.5rem;">
+      <select name="sort">
+        <option value="">مرتب‌سازی</option>
+        <option value="newest" <?php selected($_GET['sort'] ?? '', 'newest'); ?>>جدیدترین</option>
+        <option value="price_asc" <?php selected($_GET['sort'] ?? '', 'price_asc'); ?>>ارزان‌ترین</option>
+        <option value="price_desc" <?php selected($_GET['sort'] ?? '', 'price_desc'); ?>>گران‌ترین</option>
+      </select>
+      <?php foreach ($_GET as $k=>$v) if (!in_array($k,['sort'])) echo '<input type="hidden" name="'.esc_attr($k).'" value="'.esc_attr($v).'">'; ?>
+      <button class="button secondary">اعمال</button>
+    </form>
     <div class="grid">
       <?php if (have_posts()): while (have_posts()): the_post(); ?>
         <div class="col-4 col-md-6 col-sm-12">

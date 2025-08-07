@@ -1,4 +1,5 @@
 <?php get_header(); ?>
+<?php pe_breadcrumbs(); ?>
 <section class="section">
   <div class="section-header">
     <div class="title">بلاگ</div>

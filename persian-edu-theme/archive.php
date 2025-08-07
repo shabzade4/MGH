@@ -1,4 +1,5 @@
 <?php get_header(); ?>
+<?php pe_breadcrumbs(); ?>
 <div class="grid">
   <div class="col-8 col-md-12">
     <h1><?php the_archive_title(); ?></h1>

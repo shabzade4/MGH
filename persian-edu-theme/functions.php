@@ -288,3 +288,162 @@ add_action('pre_get_posts', function($q){
 function pe_cart_count(){ return array_sum(pe_get_cart()); }
 add_action('wp_ajax_pe_cart_count', function(){ wp_send_json_success(['count' => pe_cart_count()]); });
 add_action('wp_ajax_nopriv_pe_cart_count', function(){ wp_send_json_success(['count' => pe_cart_count()]); });
+
+/**
+ * ZarinPal integration (v4 API)
+ */
+function pe_zp_is_sandbox(){ return (bool) get_theme_mod('pe_zarinpal_sandbox', false); }
+function pe_zp_api_base(){ return pe_zp_is_sandbox() ? 'https://sandbox.zarinpal.com/pg/v4' : 'https://api.zarinpal.com/pg/v4'; }
+function pe_zp_startpay_base(){ return pe_zp_is_sandbox() ? 'https://sandbox.zarinpal.com/pg/StartPay/' : 'https://www.zarinpal.com/pg/StartPay/'; }
+
+function pe_zp_request_payment($amount, $description, $callback_url, $email='', $mobile=''){
+    $merchant_id = trim(get_theme_mod('pe_zarinpal_merchant_id', ''));
+    if (empty($merchant_id)) return new WP_Error('no_merchant', __('ZarinPal Merchant ID is missing', 'persian-edu'));
+    $payload = [
+        'merchant_id' => $merchant_id,
+        'amount' => (int) $amount,
+        'description' => $description ?: get_bloginfo('name'),
+        'callback_url' => $callback_url,
+        'metadata' => array_filter([
+            'email' => $email,
+            'mobile' => $mobile,
+        ]),
+    ];
+    $resp = wp_remote_post(pe_zp_api_base().'/payment/request.json', [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body' => wp_json_encode($payload),
+        'timeout' => 20,
+    ]);
+    if (is_wp_error($resp)) return $resp;
+    $code = wp_remote_retrieve_response_code($resp);
+    $body = json_decode(wp_remote_retrieve_body($resp), true);
+    if ($code !== 200 || empty($body['data']['authority'])) {
+        return new WP_Error('bad_response', __('Payment request failed', 'persian-edu'), $body);
+    }
+    $authority = $body['data']['authority'];
+    return pe_zp_startpay_base() . $authority;
+}
+
+function pe_zp_verify_payment($amount, $authority){
+    $merchant_id = trim(get_theme_mod('pe_zarinpal_merchant_id', ''));
+    if (empty($merchant_id)) return new WP_Error('no_merchant', __('ZarinPal Merchant ID is missing', 'persian-edu'));
+    $payload = [
+        'merchant_id' => $merchant_id,
+        'amount' => (int) $amount,
+        'authority' => $authority,
+    ];
+    $resp = wp_remote_post(pe_zp_api_base().'/payment/verify.json', [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body' => wp_json_encode($payload),
+        'timeout' => 20,
+    ]);
+    if (is_wp_error($resp)) return $resp;
+    $code = wp_remote_retrieve_response_code($resp);
+    $body = json_decode(wp_remote_retrieve_body($resp), true);
+    if ($code === 200 && isset($body['data']['code']) && (int)$body['data']['code'] === 100) {
+        return [ 'ref_id' => $body['data']['ref_id'], 'card' => $body['data']['card_pan'] ?? '' ];
+    }
+    return new WP_Error('verify_failed', __('Payment verification failed', 'persian-edu'), $body);
+}
+
+/**
+ * SEO meta: description, OpenGraph, Twitter
+ */
+add_action('wp_head', function(){
+    if (is_admin()) return;
+    global $post;
+    $title = wp_get_document_title();
+    $desc = '';
+    if (is_singular()) {
+        $desc = has_excerpt($post) ? get_the_excerpt($post) : wp_trim_words(wp_strip_all_tags($post->post_content), 30);
+    } else {
+        $desc = get_bloginfo('description');
+    }
+    $desc = esc_attr($desc);
+    $url = esc_url((is_singular() ? get_permalink() : home_url(add_query_arg([], $wp->request ?? ''))));
+    $site = esc_attr(get_bloginfo('name'));
+    $image = '';
+    if (is_singular() && has_post_thumbnail()) {
+        $image = wp_get_attachment_image_url(get_post_thumbnail_id(), 'large');
+    }
+    echo "\n<meta name=\"description\" content=\"{$desc}\">\n";
+    echo "<meta property=\"og:title\" content=\"{$title}\">\n";
+    echo "<meta property=\"og:description\" content=\"{$desc}\">\n";
+    echo "<meta property=\"og:type\" content=\"".(is_singular()?'article':'website')."\">\n";
+    echo "<meta property=\"og:url\" content=\"{$url}\">\n";
+    if ($image) echo "<meta property=\"og:image\" content=\"".esc_url($image)."\">\n";
+    echo "<meta name=\"twitter:card\" content=\"summary_large_image\">\n";
+    echo "<meta name=\"twitter:title\" content=\"{$title}\">\n";
+    echo "<meta name=\"twitter:description\" content=\"{$desc}\">\n";
+    if ($image) echo "<meta name=\"twitter:image\" content=\"".esc_url($image)."\">\n";
+}, 5);
+
+/**
+ * Breadcrumbs
+ */
+function pe_breadcrumbs(){
+    echo '<nav class="breadcrumbs" aria-label="Breadcrumbs">';
+    echo '<a href="'.esc_url(home_url('/')).'">خانه</a>';
+    if (is_home() || is_front_page()) {
+        echo ' / <span>بلاگ</span>';
+    } elseif (is_singular('post')) {
+        $cats = get_the_category();
+        if (!empty($cats)) {
+            $primary = $cats[0];
+            echo ' / <a href="'.esc_url(get_category_link($primary)).'">'.esc_html($primary->name).'</a>';
+        }
+        echo ' / <span>'.esc_html(get_the_title()).'</span>';
+    } elseif (is_post_type_archive('product')) {
+        echo ' / <span>فروشگاه</span>';
+    } elseif (is_singular('product')) {
+        echo ' / <a href="'.esc_url(get_post_type_archive_link('product')).'">فروشگاه</a>';
+        $terms = get_the_terms(get_the_ID(), 'product_cat');
+        if ($terms && !is_wp_error($terms)) {
+            $t = array_shift($terms);
+            echo ' / <a href="'.esc_url(get_term_link($t)).'">'.esc_html($t->name).'</a>';
+        }
+        echo ' / <span>'.esc_html(get_the_title()).'</span>';
+    } elseif (is_archive()) {
+        echo ' / <span>'.esc_html(get_the_archive_title()).'</span>';
+    } elseif (is_page()) {
+        echo ' / <span>'.esc_html(get_the_title()).'</span>';
+    } elseif (is_search()) {
+        echo ' / <span>جستجو: '.esc_html(get_search_query()).'</span>';
+    }
+    echo '</nav>';
+}
+
+/**
+ * Shop sorting (price asc/desc, newest)
+ */
+add_action('pre_get_posts', function($q){
+    if (is_admin() || !$q->is_main_query()) return;
+    if ($q->is_post_type_archive('product') || $q->is_tax('product_cat')) {
+        $sort = isset($_GET['sort']) ? sanitize_text_field($_GET['sort']) : '';
+        if ($sort === 'price_asc') {
+            $q->set('meta_key', '_pe_price');
+            $q->set('orderby', 'meta_value_num');
+            $q->set('order', 'ASC');
+        } elseif ($sort === 'price_desc') {
+            $q->set('meta_key', '_pe_price');
+            $q->set('orderby', 'meta_value_num');
+            $q->set('order', 'DESC');
+        } elseif ($sort === 'newest') {
+            $q->set('orderby', 'date');
+            $q->set('order', 'DESC');
+        }
+    }
+});
+
+// Customizer toggle for sandbox
+add_action('customize_register', function($wp_customize){
+    $wp_customize->add_setting('pe_zarinpal_sandbox', [
+        'default' => false,
+        'transport' => 'refresh',
+    ]);
+    $wp_customize->add_control('pe_zarinpal_sandbox', [
+        'label' => __('Use ZarinPal Sandbox', 'persian-edu'),
+        'section' => 'pe_payments',
+        'type' => 'checkbox',
+    ]);
+});

@@ -1,4 +1,5 @@
 <?php /* Template Name: About */ get_header(); ?>
+<?php pe_breadcrumbs(); ?>
 <section class="section">
   <div class="section-header"><div class="title">درباره ما</div></div>
   <article class="card">

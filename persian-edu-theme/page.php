@@ -1,4 +1,5 @@
 <?php get_header(); ?>
+<?php pe_breadcrumbs(); ?>
 <div class="grid">
   <div class="col-8 col-md-12">
     <?php if (have_posts()): while (have_posts()): the_post(); ?>
