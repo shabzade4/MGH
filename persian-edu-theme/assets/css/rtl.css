@@ -1,0 +1,17 @@
+/* RTL specific overrides */
+:root { direction: rtl; }
+body { direction: rtl; }
+
+.site-brand { flex-direction: row-reverse; }
+.site-header .inner { flex-direction: row-reverse; }
+.main-nav ul { flex-direction: row-reverse; }
+.main-nav a { padding: .6rem .8rem; }
+
+.slide .caption { inset-inline-start: auto; inset-inline-end: 1rem; }
+
+/* Logical properties to ensure paddings/margins follow RTL where needed */
+.breadcrumbs { text-align: right; }
+
+/* Masonry: no change required, but ensure captions align right */
+.card .content { text-align: right; }
+.meta { justify-content: flex-start; }
