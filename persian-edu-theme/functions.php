@@ -947,3 +947,91 @@ function pe_render_home_posts(){
         return ob_get_clean();
     });
 }
+
+// Performance Customizer: CDN and AVIF preference
+add_action('customize_register', function($wp_customize){
+    $wp_customize->add_section('pe_perf', [
+        'title' => __('Performance', 'persian-edu'),
+        'priority' => 20,
+    ]);
+    $wp_customize->add_setting('pe_cdn_domain', [ 'default' => '', 'transport' => 'refresh' ]);
+    $wp_customize->add_control('pe_cdn_domain', [
+        'label' => __('CDN Domain (e.g. https://cdn.example.com)', 'persian-edu'),
+        'section' => 'pe_perf',
+        'type' => 'url',
+    ]);
+    $wp_customize->add_setting('pe_prefer_avif', [ 'default' => true, 'transport' => 'refresh' ]);
+    $wp_customize->add_control('pe_prefer_avif', [
+        'label' => __('Prefer AVIF for generated images (fallback WebP)', 'persian-edu'),
+        'section' => 'pe_perf',
+        'type' => 'checkbox',
+    ]);
+});
+
+function pe_cdn_domain(){
+    $cdn = trim((string)get_theme_mod('pe_cdn_domain', ''));
+    if (!$cdn) return '';
+    return rtrim($cdn, '/');
+}
+function pe_cdn_url($url){
+    $cdn = pe_cdn_domain();
+    if (!$cdn || is_admin()) return $url;
+    $home = site_url();
+    $uploads = wp_get_upload_dir();
+    $hosts = [];
+    $hosts[] = preg_replace('#^https?://#','', $home);
+    $hosts[] = preg_replace('#^https?://#','', $uploads['baseurl']);
+    $parsed = wp_parse_url($url);
+    if (!$parsed || empty($parsed['host'])) return $url;
+    $host = $parsed['host'] . (isset($parsed['port'])? (':'.$parsed['port']) : '');
+    foreach ($hosts as $h){
+        if (stripos($host, $h) !== false){
+            // replace scheme+host with CDN
+            $path = (isset($parsed['path'])? $parsed['path'] : '') . (isset($parsed['query'])? ('?'.$parsed['query']) : '') . (isset($parsed['fragment'])? ('#'.$parsed['fragment']) : '');
+            return $cdn . $path;
+        }
+    }
+    return $url;
+}
+add_filter('script_loader_src', function($src){ return pe_cdn_url($src); });
+add_filter('style_loader_src', function($src){ return pe_cdn_url($src); });
+add_filter('wp_get_attachment_url', function($url){ return pe_cdn_url($url); });
+add_filter('the_content', function($html){
+    if (is_admin()) return $html;
+    $uploads = wp_get_upload_dir();
+    $cdn = pe_cdn_domain();
+    if (!$cdn) return $html;
+    return str_replace($uploads['baseurl'], $cdn, $html);
+});
+add_filter('wp_resource_hints', function($urls, $relation_type){
+    $cdn = pe_cdn_domain();
+    if ($cdn && in_array($relation_type, ['preconnect','dns-prefetch'])){
+        $urls[] = $cdn;
+    }
+    return array_unique($urls);
+}, 10, 2);
+
+// Preload theme CSS/JS
+add_action('wp_head', function(){
+    $css = get_template_directory_uri() . '/assets/css/main.css';
+    $js = get_template_directory_uri() . '/assets/js/main.js';
+    $css = pe_cdn_url($css);
+    $js = pe_cdn_url($js);
+    echo '<link rel="preload" as="style" href="'.esc_url($css).'">';
+    echo '<link rel="preload" as="script" href="'.esc_url($js).'">';
+}, 3);
+
+// AVIF preference toggle (fallback WebP)
+add_filter('image_editor_output_format', function($formats){
+    $prefer_avif = (bool) get_theme_mod('pe_prefer_avif', true);
+    if ($prefer_avif){
+        $formats['image/jpeg'] = 'image/avif';
+        $formats['image/png'] = 'image/avif';
+    } else {
+        $formats['image/jpeg'] = 'image/webp';
+        $formats['image/png'] = 'image/webp';
+    }
+    return $formats;
+});
+add_filter('mime_types', function($m){ $m['avif'] = 'image/avif'; return $m; });
+add_filter('upload_mimes', function($m){ $m['avif'] = 'image/avif'; return $m; });
