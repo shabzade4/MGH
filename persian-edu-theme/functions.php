@@ -1017,12 +1017,12 @@ add_filter('wp_resource_hints', function($urls, $relation_type){
 
 // Preload theme CSS/JS
 add_action('wp_head', function(){
-    $css = get_template_directory_uri() . '/assets/css/main.css';
-    $js = get_template_directory_uri() . '/assets/js/main.js';
-    $css = pe_cdn_url($css);
-    $js = pe_cdn_url($js);
-    echo '<link rel="preload" as="style" href="'.esc_url($css).'">';
-    echo '<link rel="preload" as="script" href="'.esc_url($js).'">';
+    $css_main = file_exists(get_template_directory().'/assets/css/main.min.css') ? '/assets/css/main.min.css' : '/assets/css/main.css';
+    $js_main  = file_exists(get_template_directory().'/assets/js/main.min.js') ? '/assets/js/main.min.js' : '/assets/js/main.js';
+    $css = pe_cdn_url(get_template_directory_uri() . $css_main);
+    $js = pe_cdn_url(get_template_directory_uri() . $js_main);
+    echo '<link rel="preload" as="style" href="'.esc_url($css).'" />';
+    echo '<link rel="preload" as="script" href="'.esc_url($js).'" />';
 }, 3);
 
 // AVIF preference toggle (fallback WebP)
@@ -1039,3 +1039,9 @@ add_filter('image_editor_output_format', function($formats){
 });
 add_filter('mime_types', function($m){ $m['avif'] = 'image/avif'; return $m; });
 add_filter('upload_mimes', function($m){ $m['avif'] = 'image/avif'; return $m; });
+
+// Register Service Worker
+add_action('wp_footer', function(){
+    $sw = esc_url( get_template_directory_uri().'/sw.js' );
+    echo '<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("'.$sw.'").catch(()=>{});});}</script>';
+}, 100);
