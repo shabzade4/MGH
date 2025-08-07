@@ -255,6 +255,89 @@ function pe_format_price($amount){
     return number_format((int)$amount) . ' ' . __('Toman', 'persian-edu');
 }
 
+// Asset versioning by filemtime
+function pe_file_version($relative){
+    $path = get_template_directory() . $relative;
+    return file_exists($path) ? filemtime($path) : PERSIAN_EDU_VERSION;
+}
+
+// Enqueue styles and scripts (override previous hook to add filemtime and hints)
+remove_all_actions('wp_enqueue_scripts');
+add_action('wp_enqueue_scripts', function() {
+    // Font selection
+    $font_choice = get_theme_mod('pe_font_choice', 'vazirmatn');
+    if ($font_choice === 'vazirmatn') {
+        wp_enqueue_style('pe-font', 'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap', [], null);
+        $font_family = '"Vazirmatn"';
+    } elseif ($font_choice === 'shabnam') {
+        wp_enqueue_style('pe-font', 'https://cdn.jsdelivr.net/gh/rastikerdar/shabnam-font@v5.0.1/dist/font-face.css', [], null);
+        $font_family = 'Shabnam';
+    } else { // sahel
+        wp_enqueue_style('pe-font', 'https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/font-face.css', [], null);
+        $font_family = 'Sahel';
+    }
+
+    // Inject CSS variable for font
+    $custom_css = ":root{ --font-body: {$font_family}, ui-sans-serif, system-ui; --font-heading: {$font_family}, ui-sans-serif, system-ui;}";
+    wp_register_style('pe-inline-font', false);
+    wp_enqueue_style('pe-inline-font');
+    wp_add_inline_style('pe-inline-font', $custom_css);
+
+    // Main styles (versioned)
+    wp_enqueue_style('pe-main', get_template_directory_uri() . '/assets/css/main.css', [], pe_file_version('/assets/css/main.css'));
+    wp_enqueue_style('pe-style', get_stylesheet_uri(), ['pe-main'], pe_file_version('/style.css'));
+
+    // RTL override
+    if (is_rtl()) {
+        wp_enqueue_style('pe-rtl', get_template_directory_uri() . '/assets/css/rtl.css', ['pe-main'], pe_file_version('/assets/css/rtl.css'));
+    }
+
+    // Scripts (versioned)
+    wp_enqueue_script('pe-main', get_template_directory_uri() . '/assets/js/main.js', [], pe_file_version('/assets/js/main.js'), true);
+
+    // Localize ajax
+    wp_localize_script('pe-main', 'pe_ajax', [
+        'url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('pe_ajax')
+    ]);
+}, 5);
+
+// Critical CSS inline for above-the-fold (very small)
+add_action('wp_head', function(){
+    $css = '
+    .site-header{position:sticky;top:0;backdrop-filter:blur(8px);background:rgba(11,16,32,.7);border-bottom:1px solid rgba(255,255,255,.06)}
+    .container{width:min(100% - 2rem, 1200px);margin-inline:auto}
+    .site-header .inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 0}
+    .site-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+    .site-brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, #2dd4bf, #60a5fa);display:grid;place-items:center;color:#062826;font-weight:900}
+    .main-nav ul{list-style:none;display:flex;gap:.5rem;margin:0;padding:0}
+    .main-nav a{padding:.6rem .8rem;border-radius:10px;color:inherit;text-decoration:none}
+    ';
+    echo '<style>'.$css.'</style>';
+}, 1);
+
+// Preload likely LCP image on front/home
+add_action('wp_head', function(){
+    if (is_front_page() || is_home()){
+        $q = new WP_Query(['post_type'=> is_front_page() ? 'post' : 'post', 'posts_per_page'=>1]);
+        if ($q->have_posts()){
+            $q->the_post();
+            if (has_post_thumbnail()){
+                $src = wp_get_attachment_image_url(get_post_thumbnail_id(), 'post-card');
+                if ($src){ echo '<link rel="preload" as="image" href="'.esc_url($src).'" fetchpriority="high">'; }
+            }
+            wp_reset_postdata();
+        }
+    }
+}, 2);
+
+// Prefer WebP for generated sizes
+add_filter('image_editor_output_format', function($formats){
+    $formats['image/jpeg'] = 'image/webp';
+    $formats['image/png'] = 'image/webp';
+    return $formats;
+});
+
 // Query modifications: price filter on product archives
 add_action('pre_get_posts', function($q){
     if (is_admin() || !$q->is_main_query()) return;
