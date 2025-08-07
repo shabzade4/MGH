@@ -184,7 +184,6 @@ function pe_cart_items(){
     }
     return $items;
 }
-function pe_cart_total(){ $sum = 0; foreach (pe_cart_items() as $it){ $sum += $it['total']; } return $sum; }
 
 // AJAX endpoints for cart
 add_action('wp_ajax_pe_add_to_cart', 'pe_ajax_add_to_cart');
