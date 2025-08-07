@@ -12,8 +12,10 @@
         if (strtolower($status) === 'ok') {
             $verify = pe_zp_verify_payment($amount, $authority);
             if (!is_wp_error($verify)) {
-                echo '<div class="card" style="padding:1rem; margin:1rem 0;"><h3>پرداخت موفق</h3><p>کد پیگیری: <strong>'.esc_html($verify['ref_id'])."</strong></p></div>";
+                $order_id = pe_create_order($verify);
+                echo '<div class="card" style="padding:1rem; margin:1rem 0;"><h3>پرداخت موفق</h3><p>سفارش شما ثبت شد. کد پیگیری: <strong>'.esc_html(is_wp_error($order_id)?'—':get_post_meta($order_id, '_pe_ref_id', true))."</strong></p></div>";
                 pe_set_cart([]);
+                pe_clear_coupon();
             } else {
                 echo '<div class="card" style="padding:1rem; margin:1rem 0;"><h3>تایید پرداخت ناموفق</h3><p>لطفاً با پشتیبانی تماس بگیرید.</p></div>';
             }
@@ -21,6 +23,7 @@
             echo '<div class="card" style="padding:1rem; margin:1rem 0;"><h3>پرداخت لغو شد</h3></div>';
         }
     }
+    $totals = pe_cart_totals();
   ?>
   <div class="grid">
     <div class="col-8 col-md-12">
@@ -73,9 +76,12 @@
             </div>
           <?php endforeach; ?>
           <div class="hr"></div>
+          <div style="display:flex; justify-content:space-between; margin:.25rem 0;"><span class="muted">جمع جزء</span><span><?php echo pe_format_price($totals['subtotal']); ?></span></div>
+          <div style="display:flex; justify-content:space-between; margin:.25rem 0;"><span class="muted">تخفیف</span><span><?php echo $totals['discount']>0? ('-'.pe_format_price($totals['discount'])):'—'; ?></span></div>
+          <div class="hr"></div>
           <div style="display:flex; justify-content:space-between;">
-            <strong>جمع کل</strong>
-            <strong><?php echo pe_format_price(pe_cart_total()); ?></strong>
+            <strong>قابل پرداخت</strong>
+            <strong><?php echo pe_format_price($totals['total']); ?></strong>
           </div>
         </div>
       </div>

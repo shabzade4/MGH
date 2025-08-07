@@ -447,3 +447,227 @@ add_action('customize_register', function($wp_customize){
         'type' => 'checkbox',
     ]);
 });
+
+/**
+ * Orders CPT
+ */
+add_action('init', function(){
+    register_post_type('pe_order', [
+        'label' => __('Orders', 'persian-edu'),
+        'public' => false,
+        'show_ui' => true,
+        'menu_icon' => 'dashicons-clipboard',
+        'supports' => ['title'],
+    ]);
+});
+
+/**
+ * Coupons via Customizer (simple format per line: CODE:percent:20 or CODE:fixed:50000)
+ */
+add_action('customize_register', function($wp_customize){
+    $wp_customize->add_section('pe_shop', [
+        'title' => __('Shop Settings', 'persian-edu'),
+        'priority' => 45,
+    ]);
+    $wp_customize->add_setting('pe_coupons', [
+        'default' => '',
+        'transport' => 'refresh',
+    ]);
+    $wp_customize->add_control('pe_coupons', [
+        'label' => __('Coupons (one per line)', 'persian-edu'),
+        'description' => __('Format: CODE:percent:20 or CODE:fixed:50000', 'persian-edu'),
+        'section' => 'pe_shop',
+        'type' => 'textarea',
+    ]);
+});
+
+function pe_get_coupons_map(){
+    $raw = (string) get_theme_mod('pe_coupons', '');
+    $map = [];
+    foreach (preg_split('/\r?\n/', $raw) as $line){
+        $line = trim($line);
+        if (!$line) continue;
+        $parts = array_map('trim', explode(':', $line));
+        if (count($parts) >= 3){
+            [$code, $type, $val] = $parts;
+            $code = strtoupper($code);
+            $type = strtolower($type);
+            $val = (int) $val;
+            if (in_array($type, ['percent','fixed']) && $val > 0){
+                $map[$code] = ['type'=>$type, 'value'=>$val];
+            }
+        }
+    }
+    return $map;
+}
+
+function pe_calculate_discount($subtotal, $coupon_code){
+    $coupon_code = strtoupper(trim((string)$coupon_code));
+    if (!$coupon_code) return 0;
+    $map = pe_get_coupons_map();
+    if (!isset($map[$coupon_code])) return 0;
+    $c = $map[$coupon_code];
+    if ($c['type'] === 'percent') return (int) floor($subtotal * ($c['value']/100));
+    if ($c['type'] === 'fixed') return min((int)$subtotal, (int)$c['value']);
+    return 0;
+}
+
+function pe_get_applied_coupon(){ return isset($_SESSION['pe_coupon']) ? strtoupper($_SESSION['pe_coupon']) : ''; }
+function pe_apply_coupon($code){ $_SESSION['pe_coupon'] = strtoupper(trim($code)); }
+function pe_clear_coupon(){ unset($_SESSION['pe_coupon']); }
+
+// Totals helpers
+function pe_cart_subtotal(){ $sum = 0; foreach (pe_cart_items() as $it){ $sum += $it['total']; } return $sum; }
+function pe_cart_totals(){
+    $subtotal = pe_cart_subtotal();
+    $coupon = pe_get_applied_coupon();
+    $discount = pe_calculate_discount($subtotal, $coupon);
+    $total = max(0, $subtotal - $discount);
+    return [ 'subtotal'=>$subtotal, 'discount'=>$discount, 'total'=>$total, 'coupon'=>$coupon ];
+}
+// Keep old helper for BC
+function pe_cart_total(){ $t = pe_cart_totals(); return $t['total']; }
+
+/**
+ * Create order and send emails
+ */
+function pe_create_order($verify){
+    $totals = pe_cart_totals();
+    $snapshot = $_SESSION['pe_checkout'] ?? [];
+    $items = pe_cart_items();
+    $title = 'سفارش - '.date_i18n('Y/m/d H:i');
+    $order_id = wp_insert_post([
+        'post_type' => 'pe_order',
+        'post_title' => $title,
+        'post_status' => 'publish',
+    ]);
+    if (is_wp_error($order_id)) return $order_id;
+    update_post_meta($order_id, '_pe_items', wp_json_encode($items));
+    update_post_meta($order_id, '_pe_subtotal', (int)$totals['subtotal']);
+    update_post_meta($order_id, '_pe_discount', (int)$totals['discount']);
+    update_post_meta($order_id, '_pe_total', (int)$totals['total']);
+    update_post_meta($order_id, '_pe_coupon', $totals['coupon']);
+    update_post_meta($order_id, '_pe_ref_id', sanitize_text_field($verify['ref_id'] ?? ''));
+    update_post_meta($order_id, '_pe_card', sanitize_text_field($verify['card'] ?? ''));
+    update_post_meta($order_id, '_pe_email', sanitize_email($snapshot['email'] ?? ''));
+    update_post_meta($order_id, '_pe_phone', sanitize_text_field($snapshot['phone'] ?? ''));
+    if (is_user_logged_in()) update_post_meta($order_id, '_pe_user_id', get_current_user_id());
+
+    pe_send_order_emails($order_id);
+    return $order_id;
+}
+
+function pe_build_order_summary_text($order_id){
+    $items = json_decode((string)get_post_meta($order_id, '_pe_items', true), true) ?: [];
+    $subtotal = (int) get_post_meta($order_id, '_pe_subtotal', true);
+    $discount = (int) get_post_meta($order_id, '_pe_discount', true);
+    $total = (int) get_post_meta($order_id, '_pe_total', true);
+    $coupon = (string) get_post_meta($order_id, '_pe_coupon', true);
+    $ref = (string) get_post_meta($order_id, '_pe_ref_id', true);
+    $lines = [];
+    foreach ($items as $it){ $lines[] = sprintf("- %s × %d = %s", $it['title'], $it['qty'], pe_format_price($it['total'])); }
+    $lines[] = 'جمع جزء: ' . pe_format_price($subtotal);
+    if ($discount > 0) $lines[] = 'تخفیف: -' . pe_format_price($discount) . ($coupon? " (کد: {$coupon})" : '');
+    $lines[] = 'پرداختی: ' . pe_format_price($total);
+    if ($ref) $lines[] = 'کد پیگیری: ' . $ref;
+    return implode("\n", $lines);
+}
+
+function pe_send_order_emails($order_id){
+    $admin = get_option('admin_email');
+    $email = get_post_meta($order_id, '_pe_email', true);
+    $subject = 'سفارش جدید - ' . get_bloginfo('name');
+    $summary = pe_build_order_summary_text($order_id);
+    @wp_mail($admin, $subject, "سفارش جدید ثبت شد:\n\n{$summary}");
+    if ($email) @wp_mail($email, 'رسید سفارش شما', "سفارش شما با موفقیت ثبت شد:\n\n{$summary}\n\nبا تشکر");
+}
+
+/**
+ * Schema.org JSON-LD
+ */
+add_action('wp_head', function(){
+    // WebSite with SearchAction
+    if (is_front_page() || is_home()) {
+        $site = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => get_bloginfo('name'),
+            'url' => home_url('/'),
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => home_url('/?s={search_term_string}'),
+                'query-input' => 'required name=search_term_string'
+            ]
+        ];
+        echo '<script type="application/ld+json">'.wp_json_encode($site, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).'</script>';
+    }
+
+    // BreadcrumbList
+    if (!is_front_page()){
+        $items = [];
+        $pos = 1;
+        $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>'خانه', 'item'=>home_url('/') ];
+        if (is_home()){
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>'بلاگ', 'item'=>get_permalink(get_option('page_for_posts')) ];
+        } elseif (is_singular('post')){
+            $cats = get_the_category();
+            if ($cats){ $c = $cats[0]; $items[] = ['@type'=>'ListItem','position'=>$pos++,'name'=>$c->name,'item'=>get_category_link($c)]; }
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>get_the_title(), 'item'=>get_permalink() ];
+        } elseif (is_post_type_archive('product')){
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>'فروشگاه', 'item'=>get_post_type_archive_link('product') ];
+        } elseif (is_singular('product')){
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>'فروشگاه', 'item'=>get_post_type_archive_link('product') ];
+            $terms = get_the_terms(get_the_ID(), 'product_cat');
+            if ($terms){ $t = array_shift($terms); $items[] = ['@type'=>'ListItem','position'=>$pos++,'name'=>$t->name,'item'=>get_term_link($t)]; }
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>get_the_title(), 'item'=>get_permalink() ];
+        } elseif (is_archive()){
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>get_the_archive_title(), 'item'=>home_url(add_query_arg([], $GLOBALS['wp']->request ?? '')) ];
+        } elseif (is_page()){
+            $items[] = [ '@type'=>'ListItem', 'position'=>$pos++, 'name'=>get_the_title(), 'item'=>get_permalink() ];
+        }
+        if (count($items) > 1){
+            $data = [ '@context'=>'https://schema.org', '@type'=>'BreadcrumbList', 'itemListElement'=>$items ];
+            echo '<script type="application/ld+json">'.wp_json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).'</script>';
+        }
+    }
+
+    // Article schema
+    if (is_singular('post')){
+        $img = has_post_thumbnail() ? wp_get_attachment_image_url(get_post_thumbnail_id(), 'large') : '';
+        $data = [
+            '@context'=>'https://schema.org',
+            '@type'=>'Article',
+            'headline'=>get_the_title(),
+            'datePublished'=>get_the_date('c'),
+            'dateModified'=>get_the_modified_date('c'),
+            'author'=>[ '@type'=>'Person', 'name'=>get_the_author() ],
+            'mainEntityOfPage'=>get_permalink(),
+        ];
+        if ($img) $data['image'] = [$img];
+        echo '<script type="application/ld+json">'.wp_json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).'</script>';
+    }
+
+    // Product schema
+    if (is_singular('product')){
+        $price = (int) get_post_meta(get_the_ID(), '_pe_price', true);
+        $sku = (string) get_post_meta(get_the_ID(), '_pe_sku', true);
+        $img = has_post_thumbnail() ? wp_get_attachment_image_url(get_post_thumbnail_id(), 'large') : '';
+        $offers = [
+            '@type' => 'Offer',
+            'price' => (string) $price,
+            'priceCurrency' => 'IRR',
+            'availability' => 'https://schema.org/InStock',
+            'url' => get_permalink(),
+        ];
+        $data = [
+            '@context'=>'https://schema.org',
+            '@type'=>'Product',
+            'name'=>get_the_title(),
+            'description'=>wp_strip_all_tags(get_the_excerpt() ?: get_the_content()),
+            'sku'=>$sku,
+            'offers'=>$offers,
+        ];
+        if ($img) $data['image'] = [$img];
+        echo '<script type="application/ld+json">'.wp_json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).'</script>';
+    }
+});

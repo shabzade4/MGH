@@ -1,7 +1,14 @@
 <?php /* Template Name: Cart */ get_header(); ?>
 <section class="section">
   <div class="section-header"><div class="title">سبد خرید</div></div>
-  <?php $items = pe_cart_items(); if ($items): ?>
+  <?php
+    if (!empty($_POST['pe_coupon_apply']) && isset($_POST['pe_coupon_nonce']) && wp_verify_nonce($_POST['pe_coupon_nonce'], 'pe_coupon')){
+        if (!empty($_POST['coupon'])) pe_apply_coupon($_POST['coupon']); else pe_clear_coupon();
+    }
+    $items = pe_cart_items();
+    $totals = pe_cart_totals();
+  ?>
+  <?php if ($items): ?>
   <table class="table">
     <thead>
       <tr><th>محصول</th><th>تعداد</th><th>قیمت واحد</th><th>مبلغ</th><th></th></tr>
@@ -23,8 +30,28 @@
       <?php endforeach; ?>
     </tbody>
   </table>
+  <div class="grid" style="margin-top:1rem;">
+    <div class="col-6 col-sm-12">
+      <form method="post" class="card" style="padding:1rem; display:flex; gap:.5rem; align-items:flex-end;">
+        <?php wp_nonce_field('pe_coupon','pe_coupon_nonce'); ?>
+        <div style="flex:1;">
+          <label>کد تخفیف</label>
+          <input name="coupon" value="<?php echo esc_attr(pe_get_applied_coupon()); ?>" placeholder="مثلاً OFF20">
+        </div>
+        <button class="button" name="pe_coupon_apply" value="1">اعمال</button>
+      </form>
+    </div>
+    <div class="col-6 col-sm-12">
+      <div class="card" style="padding:1rem;">
+        <div style="display:flex; justify-content:space-between; margin:.25rem 0;"><span class="muted">جمع جزء</span><span><?php echo pe_format_price($totals['subtotal']); ?></span></div>
+        <div style="display:flex; justify-content:space-between; margin:.25rem 0;"><span class="muted">تخفیف</span><span><?php echo $totals['discount']>0? ('-'.pe_format_price($totals['discount'])):'—'; ?></span></div>
+        <div class="hr"></div>
+        <div style="display:flex; justify-content:space-between; font-weight:800;"><span>قابل پرداخت</span><span><?php echo pe_format_price($totals['total']); ?></span></div>
+      </div>
+    </div>
+  </div>
   <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
-    <div class="h3">جمع کل: <?php echo pe_format_price(pe_cart_total()); ?></div>
+    <a class="button secondary" href="<?php echo esc_url(get_post_type_archive_link('product')); ?>">ادامه خرید</a>
     <a class="button" href="<?php echo esc_url(home_url('/checkout')); ?>">ادامه فرایند خرید</a>
   </div>
   <script>
