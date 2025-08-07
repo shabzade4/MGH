@@ -481,6 +481,7 @@ add_action('customize_register', function($wp_customize){
     ]);
 });
 
+// Extend coupons: support optional expiry date as 4th segment (YYYY-MM-DD) or key=value (until=YYYY-MM-DD)
 function pe_get_coupons_map(){
     $raw = (string) get_theme_mod('pe_coupons', '');
     $map = [];
@@ -493,8 +494,14 @@ function pe_get_coupons_map(){
             $code = strtoupper($code);
             $type = strtolower($type);
             $val = (int) $val;
+            $until = '';
+            if (isset($parts[3])){
+                $p = $parts[3];
+                if (stripos($p, 'until=') === 0) { $until = trim(substr($p, 6)); }
+                elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $p)) { $until = $p; }
+            }
             if (in_array($type, ['percent','fixed']) && $val > 0){
-                $map[$code] = ['type'=>$type, 'value'=>$val];
+                $map[$code] = ['type'=>$type, 'value'=>$val, 'until'=>$until];
             }
         }
     }
@@ -507,6 +514,10 @@ function pe_calculate_discount($subtotal, $coupon_code){
     $map = pe_get_coupons_map();
     if (!isset($map[$coupon_code])) return 0;
     $c = $map[$coupon_code];
+    if (!empty($c['until'])){
+        $today = date('Y-m-d');
+        if ($today > $c['until']) return 0;
+    }
     if ($c['type'] === 'percent') return (int) floor($subtotal * ($c['value']/100));
     if ($c['type'] === 'fixed') return min((int)$subtotal, (int)$c['value']);
     return 0;
@@ -669,5 +680,73 @@ add_action('wp_head', function(){
         ];
         if ($img) $data['image'] = [$img];
         echo '<script type="application/ld+json">'.wp_json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).'</script>';
+    }
+});
+
+// Product download URL meta
+add_action('add_meta_boxes', function(){
+    add_meta_box('pe_product_download', __('Digital Download', 'persian-edu'), function($post){
+        $url = get_post_meta($post->ID, '_pe_download_url', true);
+        echo '<p><label>'.__('Download URL (optional)', 'persian-edu').'</label><input type="url" name="pe_download_url" value="'.esc_attr($url).'" placeholder="https://..."/></p>';
+    }, 'product', 'normal', 'default');
+});
+add_action('save_post_product', function($post_id){
+    if (isset($_POST['pe_download_url'])){
+        update_post_meta($post_id, '_pe_download_url', esc_url_raw($_POST['pe_download_url']));
+    }
+});
+
+// Secure download and invoice handlers
+function pe_download_token($order_id, $product_id){
+    $secret = defined('AUTH_SALT') ? AUTH_SALT : wp_salt();
+    return hash_hmac('sha256', $order_id.':'.$product_id, $secret);
+}
+function pe_order_contains_product($order_id, $product_id){
+    $items = json_decode((string)get_post_meta($order_id, '_pe_items', true), true) ?: [];
+    foreach ($items as $it){ if ((int)$it['id'] === (int)$product_id) return true; }
+    return false;
+}
+add_action('template_redirect', function(){
+    // File download
+    if (isset($_GET['pe_download'])){
+        $order_id = (int)($_GET['order'] ?? 0);
+        $product_id = (int)($_GET['product'] ?? 0);
+        $token = sanitize_text_field($_GET['token'] ?? '');
+        if ($order_id && $product_id && hash_equals(pe_download_token($order_id, $product_id), $token) && pe_order_contains_product($order_id, $product_id)){
+            $url = get_post_meta($product_id, '_pe_download_url', true);
+            if ($url){
+                wp_redirect($url);
+                exit;
+            }
+        }
+        wp_die(__('Invalid download link', 'persian-edu'));
+    }
+    // Invoice printable page
+    if (isset($_GET['pe_invoice'])){
+        $order_id = (int)($_GET['order'] ?? 0);
+        if (!$order_id) wp_die('Invalid order');
+        $user_id = (int) get_post_meta($order_id, '_pe_user_id', true);
+        if (!current_user_can('manage_options') && (!is_user_logged_in() || get_current_user_id() !== $user_id)){
+            wp_die(__('Unauthorized', 'persian-edu'));
+        }
+        $items = json_decode((string)get_post_meta($order_id, '_pe_items', true), true) ?: [];
+        $subtotal = (int) get_post_meta($order_id, '_pe_subtotal', true);
+        $discount = (int) get_post_meta($order_id, '_pe_discount', true);
+        $total = (int) get_post_meta($order_id, '_pe_total', true);
+        $coupon = (string) get_post_meta($order_id, '_pe_coupon', true);
+        $ref = (string) get_post_meta($order_id, '_pe_ref_id', true);
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<!doctype html><html><head><meta charset="utf-8"><title>فاکتور</title><style>body{font-family:Tahoma, Arial, sans-serif; direction:rtl; margin:40px;} .table{width:100%; border-collapse:collapse;} th,td{border:1px solid #ccc; padding:8px; text-align:center;} .muted{color:#666;} .row{display:flex; justify-content:space-between; margin:6px 0;} @media print {.no-print{display:none;}}</style></head><body>';
+        echo '<div class="row"><h2>'.esc_html(get_bloginfo('name')).'</h2><div class="muted">'.date_i18n('Y/m/d H:i').'</div></div>';
+        echo '<div class="row"><div>شماره سفارش: '.$order_id.'</div><div>کد پیگیری: '.esc_html($ref).'</div></div>';
+        echo '<table class="table"><thead><tr><th>محصول</th><th>تعداد</th><th>قیمت</th><th>مبلغ</th></tr></thead><tbody>';
+        foreach ($items as $it){ echo '<tr><td>'.esc_html($it['title']).'</td><td>'.(int)$it['qty'].'</td><td>'.pe_format_price((int)$it['price']).'</td><td>'.pe_format_price((int)$it['total']).'</td></tr>'; }
+        echo '</tbody></table>';
+        echo '<div class="row"><span class="muted">جمع جزء</span><strong>'.pe_format_price($subtotal).'</strong></div>';
+        echo '<div class="row"><span class="muted">تخفیف'.($coupon? ' ('.$coupon.')':'').'</span><strong>'.($discount>0? '-'.pe_format_price($discount):'—').'</strong></div>';
+        echo '<div class="row"><span>قابل پرداخت</span><strong>'.pe_format_price($total).'</strong></div>';
+        echo '<div class="no-print" style="margin-top:12px;"><button onclick="window.print()">چاپ / PDF</button></div>';
+        echo '</body></html>';
+        exit;
     }
 });

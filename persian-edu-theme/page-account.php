@@ -66,7 +66,26 @@
           foreach ($orders as $o){
             $total = (int) get_post_meta($o->ID, '_pe_total', true);
             $ref = (string) get_post_meta($o->ID, '_pe_ref_id', true);
-            echo '<li class="card" style="padding:1rem; display:flex; justify-content:space-between;"><span>'.esc_html($o->post_title).'</span><span>'.pe_format_price($total).' — '.esc_html($ref).'</span></li>';
+            $items = json_decode((string)get_post_meta($o->ID, '_pe_items', true), true) ?: [];
+            echo '<li class="card" style="padding:1rem;">';
+            echo '<div style="display:flex; justify-content:space-between; align-items:center; gap:.5rem;"><strong>'.esc_html($o->post_title).'</strong><span>'.pe_format_price($total).' — '.esc_html($ref).'</span></div>';
+            if ($items){
+              echo '<ul style="margin:.5rem 0 0; padding:0 1rem;">';
+              foreach ($items as $it){
+                $p = (int)$it['id'];
+                $dl = get_post_meta($p, '_pe_download_url', true);
+                $token = pe_download_token($o->ID, $p);
+                $dl_url = $dl ? add_query_arg(['pe_download'=>'1','order'=>$o->ID,'product'=>$p,'token'=>$token], home_url('/')) : '';
+                echo '<li style="margin:.25rem 0; display:flex; justify-content:space-between; gap:.5rem;">'
+                   .'<span>'.esc_html($it['title']).' × '.(int)$it['qty'].'</span>'
+                   .'<span>'.($dl ? '<a class="button secondary" href="'.esc_url($dl_url).'">دانلود</a>' : '').'</span>'
+                   .'</li>';
+              }
+              echo '</ul>';
+            }
+            $inv = add_query_arg(['pe_invoice'=>'1','order'=>$o->ID], home_url('/'));
+            echo '<div style="margin-top:.5rem; display:flex; gap:.5rem;"><a class="button secondary" href="'.esc_url($inv).'">فاکتور</a></div>';
+            echo '</li>';
           }
           echo '</ul>';
         } else {
