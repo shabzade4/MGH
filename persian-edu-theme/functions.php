@@ -283,17 +283,21 @@ add_action('wp_enqueue_scripts', function() {
     wp_enqueue_style('pe-inline-font');
     wp_add_inline_style('pe-inline-font', $custom_css);
 
-    // Main styles (versioned)
-    wp_enqueue_style('pe-main', get_template_directory_uri() . '/assets/css/main.css', [], pe_file_version('/assets/css/main.css'));
-    wp_enqueue_style('pe-style', get_stylesheet_uri(), ['pe-main'], pe_file_version('/style.css'));
+    // Choose minified if exists
+    $css_main = file_exists(get_template_directory().'/assets/css/main.min.css') ? '/assets/css/main.min.css' : '/assets/css/main.css';
+    $css_rtl  = file_exists(get_template_directory().'/assets/css/rtl.min.css') ? '/assets/css/rtl.min.css' : '/assets/css/rtl.css';
+    $js_main  = file_exists(get_template_directory().'/assets/js/main.min.js') ? '/assets/js/main.min.js' : '/assets/js/main.js';
 
-    // RTL override
+    // Styles
+    wp_enqueue_style('pe-main', pe_cdn_url(get_template_directory_uri() . $css_main), [], pe_file_version($css_main));
+    wp_enqueue_style('pe-style', pe_cdn_url(get_stylesheet_uri()), ['pe-main'], pe_file_version('/style.css'));
+
     if (is_rtl()) {
-        wp_enqueue_style('pe-rtl', get_template_directory_uri() . '/assets/css/rtl.css', ['pe-main'], pe_file_version('/assets/css/rtl.css'));
+        wp_enqueue_style('pe-rtl', pe_cdn_url(get_template_directory_uri() . $css_rtl), ['pe-main'], pe_file_version($css_rtl));
     }
 
-    // Scripts (versioned)
-    wp_enqueue_script('pe-main', get_template_directory_uri() . '/assets/js/main.js', [], pe_file_version('/assets/js/main.js'), true);
+    // Scripts
+    wp_enqueue_script('pe-main', pe_cdn_url(get_template_directory_uri() . $js_main), [], pe_file_version($js_main), true);
 
     // Localize ajax
     wp_localize_script('pe-main', 'pe_ajax', [
