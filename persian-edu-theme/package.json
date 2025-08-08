@@ -1,0 +1,15 @@
+{
+  "name": "persian-edu-theme",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:js": "esbuild assets/js/main.js --bundle --minify --legal-comments=none --outfile=assets/js/main.min.js",
+    "build:css": "node build-css.mjs",
+    "build": "npm run build:js && npm run build:css"
+  },
+  "devDependencies": {
+    "csso": "^5.0.5",
+    "esbuild": "^0.23.0",
+    "glob": "^11.0.0"
+  }
+}
