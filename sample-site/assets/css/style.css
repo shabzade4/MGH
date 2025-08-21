@@ -69,6 +69,12 @@ html[dir="rtl"] body {
   color: var(--primary-dark);
 }
 
+/* Dropdown on hover - ensure proper RTL alignment */
+.navbar .dropdown-menu {
+  margin-top: .5rem;
+  border-radius: .75rem;
+}
+
 .btn-primary-custom {
   background-color: var(--primary);
   border-color: var(--primary);
@@ -107,6 +113,16 @@ html[dir="rtl"] body {
   height: 100%;
   padding: 1rem;
 }
+
+/* Slide halves styled as cards */
+.slide-card {
+  background: var(--white);
+  border: 1px solid rgba(26, 188, 156, 0.25);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  height: 100%;
+}
+.slide-card .slide-body { padding: 1rem 1.25rem; }
 
 .hero-slider .img-cover {
   width: 100%;

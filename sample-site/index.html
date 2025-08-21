@@ -19,7 +19,7 @@
   <div class="site-container">
     <!-- Header / Navbar -->
     <header class="section-box mb-3 p-0">
-      <nav class="navbar navbar-expand-lg navbar-light navbar-custom px-3 py-2 rounded-3">
+      <nav class="navbar navbar-expand-md navbar-light navbar-custom px-3 py-2 rounded-3">
         <a class="navbar-brand fw-bold" href="index.html">نمونه‌سایت</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="منو">
           <span class="navbar-toggler-icon"></span>
@@ -51,7 +51,7 @@
 
     <!-- Hero Slider -->
     <section class="section-box hero-slider">
-      <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+      <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-touch="true" data-bs-wrap="true" data-bs-interval="5000" data-bs-pause="false">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="اسلاید ۱"></button>
           <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="اسلاید ۲"></button>
@@ -62,16 +62,23 @@
           <div class="carousel-item active">
             <a href="blog-post.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
-                <div class="row g-4 align-items-center">
-                  <div class="col-lg-6 order-lg-2">
-                    <img src="https://picsum.photos/1024/700?random=11" class="img-cover" alt="نمونه تصویر ۱">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=11" class="img-cover" alt="نمونه تصویر ۱">
+                    </div>
                   </div>
-                  <div class="col-lg-6 order-lg-1">
-                    <span class="badge badge-accent mb-2">مطلب جدید</span>
-                    <h2 class="h3">عنوان اسلاید اول؛ معرفی مطلب جذاب</h2>
-                    <div class="divider"></div>
-                    <p class="lead mb-3">خلاصه‌ای کوتاه از مطلب یا محصول که کاربر را برای مطالعه یا مشاهده بیشتر ترغیب کند. این متن نمونه است.</p>
-                    <div class="meta">نویسنده: علی رضایی • ۱۴۰۳/۰۷/۲۳</div>
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100">
+                      <div class="slide-body">
+                        <span class="badge badge-accent mb-2">مطلب جدید</span>
+                        <h2 class="h3">عنوان اسلاید اول؛ معرفی مطلب جذاب</h2>
+                        <div class="divider"></div>
+                        <p class="lead mb-2">خلاصه‌ای کوتاه از مطلب یا محصول که کاربر را برای مطالعه یا مشاهده بیشتر ترغیب کند. این متن نمونه است.</p>
+                        <div class="meta mb-1">موضوع: برنامه‌نویسی</div>
+                        <div class="meta">نویسنده: علی رضایی • ۱۴۰۳/۰۷/۲۳</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -81,16 +88,23 @@
           <div class="carousel-item">
             <a href="product.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
-                <div class="row g-4 align-items-center">
-                  <div class="col-lg-6 order-lg-2">
-                    <img src="https://picsum.photos/1024/700?random=12" class="img-cover" alt="نمونه تصویر ۲">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=12" class="img-cover" alt="نمونه تصویر ۲">
+                    </div>
                   </div>
-                  <div class="col-lg-6 order-lg-1">
-                    <span class="badge badge-accent mb-2">محصول ویژه</span>
-                    <h2 class="h3">عنوان اسلاید دوم؛ محصول جدید فروشگاه</h2>
-                    <div class="divider"></div>
-                    <p class="lead mb-3">توضیحات کوتاه درباره محصول جدید با نکات برجسته و تشویق به مشاهده مشخصات کامل.</p>
-                    <div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۶/۰۹</div>
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100">
+                      <div class="slide-body">
+                        <span class="badge badge-accent mb-2">محصول ویژه</span>
+                        <h2 class="h3">عنوان اسلاید دوم؛ محصول جدید فروشگاه</h2>
+                        <div class="divider"></div>
+                        <p class="lead mb-2">توضیحات کوتاه درباره محصول جدید با نکات برجسته و تشویق به مشاهده مشخصات کامل.</p>
+                        <div class="meta mb-1">موضوع: نرم‌افزار</div>
+                        <div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۶/۰۹</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -100,16 +114,23 @@
           <div class="carousel-item">
             <a href="blog-post.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
-                <div class="row g-4 align-items-center">
-                  <div class="col-lg-6 order-lg-2">
-                    <img src="https://picsum.photos/1024/700?random=13" class="img-cover" alt="نمونه تصویر ۳">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=13" class="img-cover" alt="نمونه تصویر ۳">
+                    </div>
                   </div>
-                  <div class="col-lg-6 order-lg-1">
-                    <span class="badge badge-accent mb-2">پربازدید</span>
-                    <h2 class="h3">عنوان اسلاید سوم؛ مطلب محبوب کاربران</h2>
-                    <div class="divider"></div>
-                    <p class="lead mb-3">این متن نمونه است برای نمایش توضیحات کوتاه یک مطلب پربازدید در سایت.</p>
-                    <div class="meta">نویسنده: سارا نادری • ۱۴۰۳/۰۲/۱۴</div>
+                  <div class="col-lg-6">
+                    <div class="slide-card h-100">
+                      <div class="slide-body">
+                        <span class="badge badge-accent mb-2">پربازدید</span>
+                        <h2 class="h3">عنوان اسلاید سوم؛ مطلب محبوب کاربران</h2>
+                        <div class="divider"></div>
+                        <p class="lead mb-2">این متن نمونه است برای نمایش توضیحات کوتاه یک مطلب پربازدید در سایت.</p>
+                        <div class="meta mb-1">موضوع: تکنولوژی</div>
+                        <div class="meta">نویسنده: سارا نادری • ۱۴۰۳/۰۲/۱۴</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
