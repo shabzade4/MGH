@@ -59,6 +59,11 @@ html[dir="rtl"] body {
   box-shadow: var(--shadow);
 }
 
+.sticky-top {
+  top: 0; /* ensure natural stickiness */
+  z-index: 1030;
+}
+
 .navbar-custom .nav-link,
 .navbar-custom .navbar-brand {
   color: var(--text);

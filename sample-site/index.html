@@ -17,37 +17,36 @@
 </head>
 <body>
   <div class="site-container">
-    <!-- Header / Navbar -->
-    <header class="section-box mb-3 p-0">
-      <nav class="navbar navbar-expand-md navbar-light navbar-custom px-3 py-2 rounded-3">
-        <a class="navbar-brand fw-bold" href="index.html">نمونه‌سایت</a>
+    <!-- Simple Header -->
+    <header class="section-box mb-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <a class="fw-bold fs-4 text-reset text-decoration-none" href="index.html">نمونه‌سایت</a>
+        <span class="text-muted">سایت شخصی نمونه با بوت‌استرپ</span>
+      </div>
+    </header>
+
+    <!-- Sticky Navbar under header -->
+    <div class="section-box p-0 mb-3">
+      <nav class="navbar navbar-expand-md navbar-light navbar-custom sticky-top px-3 py-2 rounded-3">
+        <a class="navbar-brand d-md-none" href="index.html">منو</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="منو">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNavbar">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">صفحات</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="index.html">خانه</a></li>
-                <li><a class="dropdown-item" href="blog.html">بلاگ</a></li>
-                <li><a class="dropdown-item" href="shop.html">فروشگاه</a></li>
-                <li><a class="dropdown-item" href="about.html">درباره ما</a></li>
-                <li><a class="dropdown-item" href="contact.html">تماس با ما</a></li>
-              </ul>
-            </li>
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link active" href="index.html">خانه</a></li>
             <li class="nav-item"><a class="nav-link" href="blog.html">بلاگ</a></li>
             <li class="nav-item"><a class="nav-link" href="shop.html">فروشگاه</a></li>
             <li class="nav-item"><a class="nav-link" href="about.html">درباره ما</a></li>
             <li class="nav-item"><a class="nav-link" href="contact.html">تماس با ما</a></li>
           </ul>
-          <form class="d-flex" role="search">
+          <form class="d-none d-md-flex" role="search">
             <input class="form-control ms-2" type="search" placeholder="جستجو..." aria-label="Search">
             <button class="btn btn-primary-custom" type="submit">جستجو</button>
           </form>
         </div>
       </nav>
-    </header>
+    </div>
 
     <!-- Hero Slider -->
     <section class="section-box hero-slider">
