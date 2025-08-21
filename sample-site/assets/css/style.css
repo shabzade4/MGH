@@ -80,6 +80,18 @@ html[dir="rtl"] body {
   border-radius: .75rem;
 }
 
+/* Force horizontal navbar on md+ and remove list styles */
+.navbar-nav { list-style: none; }
+@media (min-width: 768px) {
+  .navbar-expand-md .navbar-nav {
+    flex-direction: row;
+  }
+  .navbar-expand-md .navbar-nav .nav-link {
+    padding-right: .75rem;
+    padding-left: .75rem;
+  }
+}
+
 .btn-primary-custom {
   background-color: var(--primary);
   border-color: var(--primary);
@@ -131,16 +143,13 @@ html[dir="rtl"] body {
 
 .hero-slider .img-cover {
   width: 100%;
-  height: 60vh;
+  height: 100%;
   border-radius: 12px;
   object-fit: cover;
 }
 
-@media (min-height: 900px) {
-  .hero-slider .img-cover {
-    height: 70vh;
-  }
-}
+/* Ensure the two halves of a slide fill the viewport height */
+.hero-slider .slide-content .row { min-height: calc(100vh - 2rem); }
 
 /* Combine fade + subtle slide animation for Bootstrap carousel */
 .carousel.carousel-fade .carousel-item {
@@ -171,19 +180,14 @@ html[dir="rtl"] body {
   filter: drop-shadow(0 4px 10px rgba(0,0,0,.2));
 }
 
-/* Card grid in carousels */
-.cards-carousel .card {
-  height: 100%;
-  border: 1px solid rgba(26, 188, 156, 0.2);
+/* Card grid */
+.card {
   border-radius: 12px;
   overflow: hidden;
 }
-.cards-carousel .card-img-top {
+.card-img-top {
   height: 180px;
   object-fit: cover;
-}
-.cards-carousel .card-footer {
-  background: #fbfdfa;
 }
 
 .meta {

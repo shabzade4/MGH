@@ -6,13 +6,8 @@
   <title>سایت شخصی نمونه - صفحه اصلی</title>
   <meta name="description" content="نمونه سایت شخصی با بوت‌استرپ" />
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet" integrity="sha384-JziLq3l2+z2kVwK8rHnH2Qz3c1u5q1uM9p4G8c3QyE1l1M9rMjG1hQkW5o1kZ7rG" crossorigin="anonymous">
-
-  <!-- Vazirmatn font -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn/Vazirmatn-font-face.css" rel="stylesheet">
-
-  <!-- Theme CSS -->
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
@@ -25,7 +20,7 @@
       </div>
     </header>
 
-    <!-- Sticky Navbar under header -->
+    <!-- Sticky Navbar under header (horizontal on md+) -->
     <div class="section-box p-0 mb-3">
       <nav class="navbar navbar-expand-md navbar-light navbar-custom sticky-top px-3 py-2 rounded-3">
         <a class="navbar-brand d-md-none" href="index.html">منو</a>
@@ -48,89 +43,183 @@
       </nav>
     </div>
 
-    <!-- Hero Slider -->
+    <!-- Hero Slider (full viewport, 10 slides) -->
     <section class="section-box hero-slider">
       <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-touch="true" data-bs-wrap="true" data-bs-interval="5000" data-bs-pause="false">
         <div class="carousel-indicators">
           <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="اسلاید ۱"></button>
           <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="اسلاید ۲"></button>
           <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="اسلاید ۳"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="اسلاید ۴"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" aria-label="اسلاید ۵"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="5" aria-label="اسلاید ۶"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="6" aria-label="اسلاید ۷"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="7" aria-label="اسلاید ۸"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="8" aria-label="اسلاید ۹"></button>
+          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="9" aria-label="اسلاید ۱۰"></button>
         </div>
 
         <div class="carousel-inner">
+          <!-- Slide 1: text right, image left -->
           <div class="carousel-item active">
             <a href="blog-post.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
                 <div class="row g-4 align-items-stretch">
-                  <div class="col-lg-6">
-                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
-                      <img src="https://picsum.photos/1024/700?random=11" class="img-cover" alt="نمونه تصویر ۱">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6 order-lg-1">
                     <div class="slide-card h-100">
                       <div class="slide-body">
                         <span class="badge badge-accent mb-2">مطلب جدید</span>
-                        <h2 class="h3">عنوان اسلاید اول؛ معرفی مطلب جذاب</h2>
+                        <h2 class="h3">عنوان مطلب یک</h2>
                         <div class="divider"></div>
-                        <p class="lead mb-2">خلاصه‌ای کوتاه از مطلب یا محصول که کاربر را برای مطالعه یا مشاهده بیشتر ترغیب کند. این متن نمونه است.</p>
+                        <p class="lead mb-2">خلاصه‌ای کوتاه از مطلب برای ترغیب به مطالعه بیشتر. این متن نمونه است.</p>
                         <div class="meta mb-1">موضوع: برنامه‌نویسی</div>
                         <div class="meta">نویسنده: علی رضایی • ۱۴۰۳/۰۷/۲۳</div>
                       </div>
                     </div>
                   </div>
+                  <div class="col-lg-6 order-lg-2">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=31" class="img-cover" alt="تصویر ۱">
+                    </div>
+                  </div>
                 </div>
               </div>
             </a>
           </div>
 
+          <!-- Slide 2 -->
           <div class="carousel-item">
             <a href="product.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
                 <div class="row g-4 align-items-stretch">
-                  <div class="col-lg-6">
-                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
-                      <img src="https://picsum.photos/1024/700?random=12" class="img-cover" alt="نمونه تصویر ۲">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6 order-lg-1">
                     <div class="slide-card h-100">
                       <div class="slide-body">
                         <span class="badge badge-accent mb-2">محصول ویژه</span>
-                        <h2 class="h3">عنوان اسلاید دوم؛ محصول جدید فروشگاه</h2>
+                        <h2 class="h3">عنوان محصول جدید</h2>
                         <div class="divider"></div>
-                        <p class="lead mb-2">توضیحات کوتاه درباره محصول جدید با نکات برجسته و تشویق به مشاهده مشخصات کامل.</p>
+                        <p class="lead mb-2">توضیحات کوتاه درباره محصول با نکات برجسته و دعوت به مشاهده.</p>
                         <div class="meta mb-1">موضوع: نرم‌افزار</div>
                         <div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۶/۰۹</div>
                       </div>
                     </div>
                   </div>
+                  <div class="col-lg-6 order-lg-2">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=32" class="img-cover" alt="تصویر ۲">
+                    </div>
+                  </div>
                 </div>
               </div>
             </a>
           </div>
 
+          <!-- Slide 3 -->
           <div class="carousel-item">
             <a href="blog-post.html" class="text-decoration-none text-reset">
               <div class="container slide-content">
                 <div class="row g-4 align-items-stretch">
-                  <div class="col-lg-6">
-                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
-                      <img src="https://picsum.photos/1024/700?random=13" class="img-cover" alt="نمونه تصویر ۳">
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6 order-lg-1">
                     <div class="slide-card h-100">
                       <div class="slide-body">
                         <span class="badge badge-accent mb-2">پربازدید</span>
-                        <h2 class="h3">عنوان اسلاید سوم؛ مطلب محبوب کاربران</h2>
+                        <h2 class="h3">عنوان مطلب محبوب</h2>
                         <div class="divider"></div>
-                        <p class="lead mb-2">این متن نمونه است برای نمایش توضیحات کوتاه یک مطلب پربازدید در سایت.</p>
+                        <p class="lead mb-2">توضیح کوتاه برای مطلب پربازدید سایت جهت جلب توجه مخاطب.</p>
                         <div class="meta mb-1">موضوع: تکنولوژی</div>
                         <div class="meta">نویسنده: سارا نادری • ۱۴۰۳/۰۲/۱۴</div>
                       </div>
                     </div>
                   </div>
+                  <div class="col-lg-6 order-lg-2">
+                    <div class="slide-card h-100 d-flex align-items-center justify-content-center p-2">
+                      <img src="https://picsum.photos/1024/700?random=33" class="img-cover" alt="تصویر ۳">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 4 -->
+          <div class="carousel-item">
+            <a href="blog-post.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">خبر</span><h2 class="h3">مطلب چهارم</h2><div class="divider"></div><p class="lead mb-2">خلاصه‌ای کوتاه از مطلب چهارم.</p><div class="meta mb-1">موضوع: وب</div><div class="meta">نویسنده: ناهید • ۱۴۰۳/۰۳/۲۰</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=34" class="img-cover" alt="تصویر ۴"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 5 -->
+          <div class="carousel-item">
+            <a href="product.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">محصول</span><h2 class="h3">محصول پنجم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه محصول پنجم.</p><div class="meta mb-1">موضوع: دیجیتال</div><div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۳/۱۰</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=35" class="img-cover" alt="تصویر ۵"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 6 -->
+          <div class="carousel-item">
+            <a href="blog-post.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">مطلب</span><h2 class="h3">مطلب ششم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه مطلب ششم.</p><div class="meta mb-1">موضوع: طراحی</div><div class="meta">نویسنده: مرجان • ۱۴۰۳/۰۳/۲۹</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=36" class="img-cover" alt="تصویر ۶"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 7 -->
+          <div class="carousel-item">
+            <a href="product.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">محصول</span><h2 class="h3">محصول هفتم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه محصول هفتم.</p><div class="meta mb-1">موضوع: لوازم جانبی</div><div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۳/۲۱</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=37" class="img-cover" alt="تصویر ۷"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 8 -->
+          <div class="carousel-item">
+            <a href="blog-post.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">مطلب</span><h2 class="h3">مطلب هشتم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه مطلب هشتم.</p><div class="meta mb-1">موضوع: سبک زندگی</div><div class="meta">نویسنده: آرمین • ۱۴۰۳/۰۳/۱۱</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=38" class="img-cover" alt="تصویر ۸"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 9 -->
+          <div class="carousel-item">
+            <a href="product.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">محصول</span><h2 class="h3">محصول نهم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه محصول نهم.</p><div class="meta mb-1">موضوع: نرم‌افزار</div><div class="meta">فروشنده: فروشگاه نمونه • ۱۴۰۳/۰۲/۲۸</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=39" class="img-cover" alt="تصویر ۹"></div></div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 10 -->
+          <div class="carousel-item">
+            <a href="blog-post.html" class="text-decoration-none text-reset">
+              <div class="container slide-content">
+                <div class="row g-4 align-items-stretch">
+                  <div class="col-lg-6 order-lg-1"><div class="slide-card h-100"><div class="slide-body"><span class="badge badge-accent mb-2">مطلب</span><h2 class="h3">مطلب دهم</h2><div class="divider"></div><p class="lead mb-2">توضیح کوتاه مطلب دهم.</p><div class="meta mb-1">موضوع: آموزشی</div><div class="meta">نویسنده: پارسا • ۱۴۰۳/۰۲/۰۸</div></div></div></div>
+                  <div class="col-lg-6 order-lg-2"><div class="slide-card h-100 d-flex align-items-center justify-content-center p-2"><img src="https://picsum.photos/1024/700?random=40" class="img-cover" alt="تصویر ۱۰"></div></div>
                 </div>
               </div>
             </a>
@@ -148,281 +237,31 @@
       </div>
     </section>
 
-    <!-- Latest Posts -->
+    <!-- Latest Posts (4-column grid) -->
     <section class="section-box">
       <div class="section-title">
         <span class="dot"></span>
         <h2 class="h5 mb-0">آخرین مطالب</h2>
       </div>
-
-      <div id="postsCarousel" class="carousel slide cards-carousel" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-              <!-- 4 cards -->
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=101" class="card-img-top" alt="مطلب ۱">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب یک</h3>
-                    <p class="text-muted small mb-2">خلاصه کوتاه از مطلب برای آشنایی اولیه کاربر.</p>
-                    <div class="meta">نویسنده: آیدا • ۱۴۰۳/۰۵/۰۲ • موضوع: برنامه‌نویسی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=102" class="card-img-top" alt="مطلب ۲">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب دو</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه و جذاب برای تشویق به کلیک.</p>
-                    <div class="meta">نویسنده: رضا • ۱۴۰۳/۰۴/۱۲ • موضوع: طراحی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=103" class="card-img-top" alt="مطلب ۳">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب سه</h3>
-                    <p class="text-muted small mb-2">متن نمونه برای پیش‌نمایش مطلب.</p>
-                    <div class="meta">نویسنده: نگین • ۱۴۰۳/۰۴/۰۵ • موضوع: تکنولوژی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=104" class="card-img-top" alt="مطلب ۴">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب چهار</h3>
-                    <p class="text-muted small mb-2">این توضیحات برای کارت مطلب است.</p>
-                    <div class="meta">نویسنده: سجاد • ۱۴۰۳/۰۴/۰۱ • موضوع: شخصی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- second slide of posts -->
-          <div class="carousel-item">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=105" class="card-img-top" alt="مطلب ۵">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب پنج</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه نمونه.</p>
-                    <div class="meta">نویسنده: مرجان • ۱۴۰۳/۰۳/۲۹ • موضوع: آموزشی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=106" class="card-img-top" alt="مطلب ۶">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب شش</h3>
-                    <p class="text-muted small mb-2">متن نمونه برای کارت.</p>
-                    <div class="meta">نویسنده: پارسا • ۱۴۰۳/۰۳/۲۲ • موضوع: وب</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=107" class="card-img-top" alt="مطلب ۷">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب هفت</h3>
-                    <p class="text-muted small mb-2">پیش‌نمایش متن.</p>
-                    <div class="meta">نویسنده: ناهید • ۱۴۰۳/۰۳/۲۰ • موضوع: تجربه</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=108" class="card-img-top" alt="مطلب ۸">
-                  <div class="card-body">
-                    <h3 class="h6">عنوان مطلب هشت</h3>
-                    <p class="text-muted small mb-2">توضیحات خلاصه.</p>
-                    <div class="meta">نویسنده: آرمین • ۱۴۰۳/۰۳/۱۱ • موضوع: سبک زندگی</div>
-                  </div>
-                  <div class="card-footer text-end">
-                    <a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#postsCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">قبلی</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#postsCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">بعدی</span>
-        </button>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=101" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">عنوان مطلب یک</h3><p class="text-muted small mb-2">خلاصه کوتاه از مطلب.</p><div class="meta">نویسنده: آیدا • ۱۴۰۳/۰۵/۰۲ • موضوع: برنامه‌نویسی</div></div><div class="card-footer text-end"><a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=102" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">عنوان مطلب دو</h3><p class="text-muted small mb-2">توضیحات کوتاه و جذاب.</p><div class="meta">نویسنده: رضا • ۱۴۰۳/۰۴/۱۲ • موضوع: طراحی</div></div><div class="card-footer text-end"><a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=103" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">عنوان مطلب سه</h3><p class="text-muted small mb-2">متن نمونه پیش‌نمایش.</p><div class="meta">نویسنده: نگین • ۱۴۰۳/۰۴/۰۵ • موضوع: تکنولوژی</div></div><div class="card-footer text-end"><a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=104" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">عنوان مطلب چهار</h3><p class="text-muted small mb-2">این توضیح کارت مطلب است.</p><div class="meta">نویسنده: سجاد • ۱۴۰۳/۰۴/۰۱ • موضوع: شخصی</div></div><div class="card-footer text-end"><a href="blog-post.html" class="btn btn-sm btn-primary-custom">خواندن کامل</a></div></div></div>
       </div>
     </section>
 
-    <!-- Latest Products -->
+    <!-- Latest Products (4-column grid) -->
     <section class="section-box">
       <div class="section-title">
         <span class="dot"></span>
         <h2 class="h5 mb-0">آخرین محصولات</h2>
       </div>
-
-      <div id="productsCarousel" class="carousel slide cards-carousel" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-              <!-- 4 product cards -->
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=201" class="card-img-top" alt="محصول ۱">
-                  <div class="card-body">
-                    <h3 class="h6">محصول یک</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه محصول.</p>
-                    <div class="meta">قیمت: ۳۲۰٬۰۰۰ تومان • دسته: دیجیتال</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">موجود</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=202" class="card-img-top" alt="محصول ۲">
-                  <div class="card-body">
-                    <h3 class="h6">محصول دو</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه محصول.</p>
-                    <div class="meta">قیمت: ۲۱۰٬۰۰۰ تومان • دسته: کتاب</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">پرفروش</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=203" class="card-img-top" alt="محصول ۳">
-                  <div class="card-body">
-                    <h3 class="h6">محصول سه</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه محصول.</p>
-                    <div class="meta">قیمت: ۵۶۰٬۰۰۰ تومان • دسته: نرم‌افزار</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">جدید</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=204" class="card-img-top" alt="محصول ۴">
-                  <div class="card-body">
-                    <h3 class="h6">محصول چهار</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه محصول.</p>
-                    <div class="meta">قیمت: ۴۵۰٬۰۰۰ تومان • دسته: لوازم جانبی</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">تخفیف‌دار</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- second slide of products -->
-          <div class="carousel-item">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=205" class="card-img-top" alt="محصول ۵">
-                  <div class="card-body">
-                    <h3 class="h6">محصول پنج</h3>
-                    <p class="text-muted small mb-2">توضیحات محصول.</p>
-                    <div class="meta">قیمت: ۳۹۰٬۰۰۰ تومان • دسته: دیجیتال</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">موجود</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=206" class="card-img-top" alt="محصول ۶">
-                  <div class="card-body">
-                    <h3 class="h6">محصول شش</h3>
-                    <p class="text-muted small mb-2">توضیح کوتاه.</p>
-                    <div class="meta">قیمت: ۱۲۰٬۰۰۰ تومان • دسته: کتاب</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">پیشنهادی</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=207" class="card-img-top" alt="محصول ۷">
-                  <div class="card-body">
-                    <h3 class="h6">محصول هفت</h3>
-                    <p class="text-muted small mb-2">متن نمونه.</p>
-                    <div class="meta">قیمت: ۲۶۰٬۰۰۰ تومان • دسته: لوازم جانبی</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">پرفروش</span>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="card h-100">
-                  <img src="https://picsum.photos/500/300?random=208" class="card-img-top" alt="محصول ۸">
-                  <div class="card-body">
-                    <h3 class="h6">محصول هشت</h3>
-                    <p class="text-muted small mb-2">توضیحات کوتاه.</p>
-                    <div class="meta">قیمت: ۸۹۰٬۰۰۰ تومان • دسته: نرم‌افزار</div>
-                  </div>
-                  <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a>
-                    <span class="badge text-bg-light">جدید</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#productsCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">قبلی</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#productsCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">بعدی</span>
-        </button>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=201" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">محصول یک</h3><p class="text-muted small mb-2">توضیحات کوتاه محصول.</p><div class="meta">قیمت: ۳۲۰٬۰۰۰ تومان • دسته: دیجیتال</div></div><div class="card-footer d-flex justify-content-between align-items-center"><a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a><span class="badge text-bg-light">موجود</span></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=202" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">محصول دو</h3><p class="text-muted small mb-2">توضیحات کوتاه محصول.</p><div class="meta">قیمت: ۲۱۰٬۰۰۰ تومان • دسته: کتاب</div></div><div class="card-footer d-flex justify-content-between align-items-center"><a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a><span class="badge text-bg-light">پرفروش</span></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=203" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">محصول سه</h3><p class="text-muted small mb-2">توضیحات کوتاه محصول.</p><div class="meta">قیمت: ۵۶۰٬۰۰۰ تومان • دسته: نرم‌افزار</div></div><div class="card-footer d-flex justify-content-between align-items-center"><a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a><span class="badge text-bg-light">جدید</span></div></div></div>
+        <div class="col"><div class="card h-100"><img src="https://picsum.photos/500/300?random=204" class="card-img-top" alt=""><div class="card-body"><h3 class="h6">محصول چهار</h3><p class="text-muted small mb-2">توضیحات کوتاه محصول.</p><div class="meta">قیمت: ۴۵۰٬۰۰۰ تومان • دسته: لوازم جانبی</div></div><div class="card-footer d-flex justify-content-between align-items-center"><a href="product.html" class="btn btn-sm btn-primary-custom">مشاهده</a><span class="badge text-bg-light">تخفیف‌دار</span></div></div></div>
       </div>
     </section>
 
@@ -430,7 +269,7 @@
     <section class="section-box">
       <div class="section-title">
         <span class="dot"></span>
-        <h2 class="h5 mb-0">درباره ما</h2>
+        <h2 class="ه5 mb-0">درباره ما</h2>
       </div>
       <div class="row align-items-center g-4">
         <div class="col-lg-5 order-lg-1 text-center">
@@ -556,9 +395,7 @@
     </footer>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqk5S2by6br4gNJ7DXjqk09RmUpZxAqV1z43EEN5Rs5Xb4lJQq8d8" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>
-
